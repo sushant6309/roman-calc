@@ -167,6 +167,12 @@ class Game extends React.Component {
       this.setState({ result: 0 });
       return true;
     }
+
+    if(num < 0){
+      this.setState({ result: '-'+this.convertIntegerToRoman(num*-1) });
+      return true;
+    }
+
     this.setState({ result: this.convertIntegerToRoman(num) });
     return true;
   }
