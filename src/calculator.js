@@ -4,12 +4,17 @@
 /**
  * Created by apple on 15/06/17.
  */
+
 import React from 'react';
 
 import _ from 'lodash';
 import './index.css';
 import Board from './board';
-
+/**
+ * Parent Class
+ *
+ * This class contains all the logical components for the calculator.
+ */
 export default class Calculator extends React.Component {
   constructor() {
     super();
@@ -23,31 +28,31 @@ export default class Calculator extends React.Component {
     };
   }
 
-  handleClick(i) {
+  /**
+   * Clear all @function
+   *
+   * To clear the calculator screen.
+   */
+  clearAll() {
 
-    this.setState({ errorMessage:'' });
-    if(_.indexOf(this.state.romans, i) >= 0) {
-      this.addRomanToQueryString(i);
-    }
-    else if(_.indexOf(this.state.operands, i) >= 0) {
-      this.addOperatorToQueryString(i);
-    }
-    else if(i === 'Del') {
-      this.deleteFromQueryString();
-    }
-
-    else if(i === 'Clr'){
       this.setState({
         queryString : '',
         result: '',
+        errorMessage: '',
       });
-    }
-    else {
-      this.calculateAnswer();
-    }
   }
 
+  /**
+   *
+   * @param roman
+   *
+   * This function inserts the Roman character to @calculator queryString.
+   * Also check the validation for correct roman number.
+   *
+   * @returns {boolean}
+   */
   addRomanToQueryString(roman) {
+    this.setState({ errorMessage: '' });
     const qs = this.state.queryString;
     if(qs.length === 0) {
       this.setState({ queryString: qs+roman });
@@ -73,7 +78,16 @@ export default class Calculator extends React.Component {
     return true;
   }
 
+  /**
+   *
+   * @param operator
+   *
+   * This function adds a operator to the queryString
+   * @returns {boolean}
+   */
   addOperatorToQueryString(operator) {
+
+    this.setState({ errorMessage: '' });
 
     if(this.state.queryString.length < 1){
       return true;
@@ -90,15 +104,23 @@ export default class Calculator extends React.Component {
     this.setState({ queryString: qs+operator });
   }
 
+  /**
+   * This function removes the last character from the queryString.
+   * @returns {boolean}
+   */
   deleteFromQueryString() {
-
+    this.setState({ errorMessage: '' });
     if(this.state.queryString.length > 0){
       this.setState({ queryString: this.state.queryString.slice(0, -1) });
     }
     return true;
   }
 
+  /**
+   * This function calculates the results of the mathematical problem given by user
+   */
   calculateAnswer() {
+    this.setState({ errorMessage: '' });
     let qs = this.state.queryString;
     const romans = qs.split(/[+-//*]+/);
     const _this = this;
@@ -123,7 +145,14 @@ export default class Calculator extends React.Component {
 
   }
 
+  /**
+   *
+   * @param num
+   * This function display result on calculator screen.
+   * @returns {boolean}
+   */
   giveResult(num) {
+    this.setState({ queryString: '' });
     if(num === 0) {
       this.setState({ result: 0 });
       return true;
@@ -143,6 +172,14 @@ export default class Calculator extends React.Component {
     return true;
   }
 
+  /**
+   *
+   * @param num1
+   * @param num2
+   * @param operator
+   *
+   * @returns {*}
+   */
   calculate(num1, num2, operator){
     if(operator === '*'){
       return num1 * num2;
@@ -159,7 +196,13 @@ export default class Calculator extends React.Component {
     return num1 / num2;
   }
 
-
+  /**
+   *
+   * @param roman
+   *
+   * This function converts Roman numbers to Integers.
+   * @returns {number}
+   */
   convertRomanToInteger(roman) {
     let result = 0;
     // the result is now a number, not a string
@@ -174,6 +217,14 @@ export default class Calculator extends React.Component {
     return result;
   }
 
+  /**
+   *
+   * @param num
+   *
+   * This function converts Integers to Roman Numbers.
+   *
+   * @returns {string}
+   */
   convertIntegerToRoman(num) {
     let result = '';
     const decimal = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
@@ -196,6 +247,9 @@ export default class Calculator extends React.Component {
 
     return (
       <div className="container-display">
+        {this.state.errorMessage !== ''  &&
+        <div className="text-display" style={{marginLeft: 11, color: 'red'}}>{this.state.errorMessage}</div>
+        }
         <div className="result-container">
           <div className="text-display">
             {this.state.queryString}
@@ -204,7 +258,11 @@ export default class Calculator extends React.Component {
         </div>
         <div className="main-container1">
           <Board
-            onClick={i => this.handleClick(i)}
+            roman={i => this.addRomanToQueryString(i)}
+            delete={() => this.deleteFromQueryString()}
+            operator={i => this.addOperatorToQueryString(i)}
+            equalTo={() => this.calculateAnswer()}
+            clearAll={() => this.clearAll()}
           />
         </div>
       </div>
